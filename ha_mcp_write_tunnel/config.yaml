@@ -1,0 +1,24 @@
+name: "HA MCP Write Tunnel"
+version: "0.1.0"
+slug: "ha_mcp_write_tunnel"
+description: "Separate OpenAI Secure MCP tunnel for explicitly authorized HA write tools"
+url: "https://github.com/ChrisTinkers/ha-mcp-permissions"
+arch:
+  - amd64
+startup: application
+boot: manual
+init: false
+host_network: false
+homeassistant_api: false
+hassio_api: false
+auth_api: false
+docker_api: false
+ports: {}
+options:
+  tunnel_id: ""
+  api_key: ""
+  mcp_url: ""
+schema:
+  tunnel_id: str
+  api_key: password
+  mcp_url: password
