@@ -72,7 +72,7 @@ class ScopeTests(unittest.TestCase):
             }))
         self.assertEqual(len(FakeClient.calls), 1)
         url, payload, headers = FakeClient.calls[0]
-        self.assertTrue(url.endswith("/services/todo/add_item?return_response"))
+        self.assertTrue(url.endswith("/services/todo/add_item"))
         self.assertEqual(payload["entity_id"], "todo.ha_weiterentwicklung")
         self.assertEqual(payload["item"], "Scope test only")
 
