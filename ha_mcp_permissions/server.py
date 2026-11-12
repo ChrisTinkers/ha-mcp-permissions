@@ -10,7 +10,7 @@ from pathlib import Path
 
 import httpx
 import uvicorn
-from mcp.server.mcpserver import MCPServer
+from mcp.server import MCPServer
 
 TARGET = "todo.ha_weiterentwicklung"
 API_ROOT = "http://supervisor/core/api"
