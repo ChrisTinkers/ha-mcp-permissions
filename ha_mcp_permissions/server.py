@@ -46,7 +46,9 @@ async def _ha_call(action: str, data: dict) -> dict:
     if action not in {"get_items", "add_item", "update_item"}:
         raise ValueError("Action not allowed")
     payload = {**data, "entity_id": TARGET}  # Fixed target wins even against injected data
-    url = f"{API_ROOT}/services/todo/{action}?return_response"
+    url = f"{API_ROOT}/services/todo/{action}"
+    if action == "get_items":
+        url += "?return_response"
     headers = {"Authorization": f"Bearer {SUPERVISOR_TOKEN}"}
     async with httpx.AsyncClient(timeout=15.0) as client:
         response = await client.post(url, json=payload, headers=headers)
