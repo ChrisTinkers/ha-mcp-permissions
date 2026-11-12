@@ -14,6 +14,10 @@ jobs:
           python-version: '3.12'
       - name: Install runtime dependencies
         run: python -m pip install -r ha_mcp_permissions/requirements.txt
+      - name: Validate write tunnel shell syntax
+        run: sh -n ha_mcp_write_tunnel/run.sh
+      - name: Build isolated write tunnel image
+        run: docker build --pull -t ha-mcp-write-tunnel:test ha_mcp_write_tunnel
       - name: Check syntax and policy invariants
         run: |
           python -m compileall -q ha_mcp_permissions/server.py
