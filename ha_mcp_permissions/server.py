@@ -10,7 +10,7 @@ from pathlib import Path
 
 import httpx
 import uvicorn
-from mcp.server import MCPServer
+from mcp.server.mcpserver import MCPServer
 
 TARGET = "todo.ha_weiterentwicklung"
 API_ROOT = "http://supervisor/core/api"
@@ -123,6 +123,6 @@ class ProtectedMCP:
 
 if __name__ == "__main__":
     app = ProtectedMCP(server.streamable_http_app(
-        host="0.0.0.0", stateless_http=True, json_response=True
+        host="0.0.0.0", stateless_http=True, json_response=True, max_request_body_size=16384
     ))
     uvicorn.run(app, host="0.0.0.0", port=PORT, access_log=False)
