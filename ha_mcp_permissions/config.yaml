@@ -1,0 +1,23 @@
+name: "HA MCP Permissions"
+version: "0.1.0"
+slug: "ha_mcp_permissions"
+description: "Separater MCP-Schreibzugang mit festen Freigaben"
+url: "https://github.com/ChrisTinkers/ha-mcp-permissions"
+arch:
+  - amd64
+startup: application
+boot: auto
+init: false
+homeassistant_api: true
+hassio_api: false
+auth_api: false
+docker_api: false
+host_network: false
+ports:
+  8765/tcp: null
+ports_description:
+  8765/tcp: "Internal MCP HTTP endpoint (do not expose to internet)"
+options:
+  access_key: ""
+schema:
+  access_key: password
