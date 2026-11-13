@@ -2,7 +2,7 @@
 
 A self-hosted Home Assistant MCP setup with **separate read-only and narrowly scoped write connections**. The write gateway manages **only** `todo.ha_weiterentwicklung`.
 
-> **Status (2026-11-13):** All three tunnel/gateway apps are installed and running. A GitHub-managed replacement for the local read tunnel is now tracked under a new app slug; the existing local installation remains active. Its start script uses confirmed `bashio::config` sources, but the exact three original assignment lines have not yet been compared byte-for-byte; deployment parity and a clean-install test remain open. Version 1.0.0 is proposed but **not yet released**.
+> **Status (2026-11-13):** The currently deployed permissions app, write tunnel and legacy local read tunnel are running; the GitHub-managed read tunnel is prepared but not yet installed. A GitHub-managed replacement for the local read tunnel is now tracked under a new app slug; the existing local installation remains active. Its start script uses confirmed `bashio::config` sources, but the exact three original assignment lines have not yet been compared byte-for-byte; deployment parity and a clean-install test remain open. Version 1.0.0 is proposed but **not yet released**.
 
 ## Architecture
 
@@ -20,11 +20,11 @@ Both connections are independent. No generic Home Assistant service caller is ex
 
 ## Components
 
-| App | Source | Installed version (2026-11-13) | Role |
+| App | Source | Version/status (2026-11-13) | Role |
 | --- | --- | --- | --- |
 | HA MCP Permissions | [ha_mcp_permissions/](ha_mcp_permissions/) | 0.1.4 | Restricts write operations to one to-do list |
 | HA MCP Write Tunnel | [ha_mcp_write_tunnel/](ha_mcp_write_tunnel/) | 0.1.1 | Dedicated OpenAI tunnel to the limited gateway |
-| HA MCP Read Tunnel | [ha_mcp_read_tunnel/](ha_mcp_read_tunnel/); [verification notes](LOCAL_READ_TUNNEL.md) | 0.1.0 | Local tunnel to the existing read-only MCP server |
+| HA MCP Read Tunnel | [ha_mcp_read_tunnel/](ha_mcp_read_tunnel/); [migration notes](ha_mcp_read_tunnel/DOCS.md) | 0.1.0, prepared / not installed | Replacement for the local read tunnel |
 | Home Assistant MCP Server | External dependency | 9.2.0 | Existing read-only MCP integration |
 
 Installed component versions are independent; there is not yet a unified 1.0 release.
@@ -44,7 +44,7 @@ The target `todo.ha_weiterentwicklung` is hard-coded. Users cannot provide anoth
 
 1. Install and verify the upstream Home Assistant MCP Server in `read_only_mode=true`.
 2. The new HA MCP Read Tunnel app is tracked in sanitized form. The existing local app remains active until cutover. Its exact start-script equivalence, migration, and restore procedure still require [verification](ha_mcp_read_tunnel/DOCS.md).
-3. Add this repository to the Home Assistant app store and install HA MCP Permissions and HA MCP Write Tunnel.
+3. The repository is already in the Home Assistant app store for HA MCP Permissions and HA MCP Write Tunnel. After merging the PR, refresh it and install the new HA MCP Read Tunnel using the documented controlled cutover.
 4. Follow the [permissions app notes](ha_mcp_permissions/DOCS.md) and [write tunnel notes](ha_mcp_write_tunnel/DOCS.md). Configure credentials only in Home Assistant's local app options.
 5. Confirm the four write tools operate exclusively on the development to-do list; verify denial of other actions and entities.
 6. Maintain a separate secure backup of local configuration, credentials and app data. GitHub does **not** replace a secret-bearing backup.
