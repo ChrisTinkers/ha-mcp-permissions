@@ -29,7 +29,9 @@ Versioning policy: semantic versioning per app; an optional suite-wide `v1.0.0` 
 - [ ] Demonstrate the running container image corresponds to reviewed source
 - [ ] Independently verify denied actions against other entities/services without modifying them
 - [ ] Dependency and base-image vulnerability review, plus version pinning strategy
+- [x] Existing pre-release app versions and Docker build defaults are internally consistent (0.1.4 / 0.1.1 / 0.1.1)
 - [ ] Consistent 1.0.0 versions in three app configs and Docker build labels
+- [x] Documented recovery and rollback in [RECOVERY.md](RECOVERY.md)
 - [ ] Test clean install, upgrade/rollback and restoration from backup
 - [ ] Confirm exact Home Assistant Core/OS versions and firewall/ingress restrictions
 - [ ] Publish final release notes and tag only after all required checks
