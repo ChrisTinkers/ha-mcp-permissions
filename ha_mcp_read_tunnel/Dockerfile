@@ -17,7 +17,7 @@ COPY run.sh /run.sh
 RUN chmod 755 /run.sh
 
 ARG BUILD_ARCH=amd64
-ARG BUILD_VERSION=0.1.1
+ARG BUILD_VERSION=1.0.0
 LABEL io.hass.type="app" \
       io.hass.arch="${BUILD_ARCH}" \
       io.hass.version="${BUILD_VERSION}"

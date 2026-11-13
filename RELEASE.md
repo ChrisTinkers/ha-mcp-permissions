@@ -31,7 +31,8 @@ Versioning policy: semantic versioning per app; an optional suite-wide `v1.0.0` 
 - [ ] Independently verify denied writes against other entities/services (mocked scope tests pass; live scope escape test not conducted)
 - [ ] Dependency and base-image vulnerability review, plus version pinning strategy
 - [x] Existing pre-release app versions and Docker build defaults are internally consistent (0.1.4 / 0.1.1 / 0.1.1)
-- [ ] Consistent 1.0.0 versions in three app configs and Docker build labels
+- [x] Prepare consistent 1.0.0 versions in the three app configs and Docker build defaults on the release branch
+- [ ] Verify v1.0.0 release candidate, merge and deploy one app at a time
 - [x] Documented recovery and rollback in [RECOVERY.md](RECOVERY.md)
 - [x] User confirmed in Home Assistant UI that the prior successful backup contains HA MCP Permissions, HA MCP Write Tunnel, and the old local read tunnel (2026-11-13). This provides a rollback source for those apps, not for the newly installed GitHub-managed read tunnel.
 - [ ] Test clean install, upgrade/rollback and actual restoration from backup; direct backup listing through read-only MCP is deliberately blocked by HA MCP Server setting enable_snapshot_actions=false
@@ -47,4 +48,4 @@ Do not commit keys, tunnel IDs, private URLs or populated Home Assistant app opt
 
 ## Release decision
 
-**Not released as v1.0.0 yet.** See [CHANGELOG.md](CHANGELOG.md) and [README.md](README.md). Release only after the remaining checks are confirmed, rather than equating working functionality with audited security.
+**v1.0.0 source candidate prepared; not merged or deployed, and not tagged as a release yet.** See [CHANGELOG.md](CHANGELOG.md) and [README.md](README.md). Release only after the remaining checks are confirmed, rather than equating working functionality with audited security.
