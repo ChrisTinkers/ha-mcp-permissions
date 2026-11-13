@@ -2,13 +2,13 @@
 
 A self-hosted Home Assistant MCP setup with **separate read-only and narrowly scoped write connections**. The write gateway manages **only** `todo.ha_weiterentwicklung`.
 
-> **Status (2026-11-13):** All three tunnel/gateway apps are installed and running. The local read tunnel's three source files have now been reconstructed from the running system and are tracked. Its start script uses confirmed `bashio::config` sources, but the exact three original assignment lines have not yet been compared byte-for-byte; deployment parity and a clean-install test remain open. Version 1.0.0 is proposed but **not yet released**.
+> **Status (2026-11-13):** All three tunnel/gateway apps are installed and running. A GitHub-managed replacement for the local read tunnel is now tracked under a new app slug; the existing local installation remains active. Its start script uses confirmed `bashio::config` sources, but the exact three original assignment lines have not yet been compared byte-for-byte; deployment parity and a clean-install test remain open. Version 1.0.0 is proposed but **not yet released**.
 
 ## Architecture
 
 ```text
 ChatGPT
-  |-- Read connection --> OpenAI MCP Tunnel (lokal) --> HA MCP Server 9.2.0
+  |-- Read connection --> HA MCP Read Tunnel --> HA MCP Server 9.2.0
   |                                                (read_only_mode=true)
   |
   `-- Write connection --> HA MCP Write Tunnel --> HA MCP Permissions
@@ -24,7 +24,7 @@ Both connections are independent. No generic Home Assistant service caller is ex
 | --- | --- | --- | --- |
 | HA MCP Permissions | [ha_mcp_permissions/](ha_mcp_permissions/) | 0.1.4 | Restricts write operations to one to-do list |
 | HA MCP Write Tunnel | [ha_mcp_write_tunnel/](ha_mcp_write_tunnel/) | 0.1.1 | Dedicated OpenAI tunnel to the limited gateway |
-| OpenAI MCP Tunnel (lokal) | [openai_mcp_tunnel_local/](openai_mcp_tunnel_local/); [verification notes](LOCAL_READ_TUNNEL.md) | 0.1.0 | Local tunnel to the existing read-only MCP server |
+| HA MCP Read Tunnel | [ha_mcp_read_tunnel/](ha_mcp_read_tunnel/); [verification notes](LOCAL_READ_TUNNEL.md) | 0.1.0 | Local tunnel to the existing read-only MCP server |
 | Home Assistant MCP Server | External dependency | 9.2.0 | Existing read-only MCP integration |
 
 Installed component versions are independent; there is not yet a unified 1.0 release.
@@ -43,7 +43,7 @@ The target `todo.ha_weiterentwicklung` is hard-coded. Users cannot provide anoth
 ## Installation and recovery
 
 1. Install and verify the upstream Home Assistant MCP Server in `read_only_mode=true`.
-2. The local read tunnel's source is now tracked in sanitized form. Its exact start-script equivalence and restore procedure still require [verification](LOCAL_READ_TUNNEL.md).
+2. The new HA MCP Read Tunnel app is tracked in sanitized form. The existing local app remains active until cutover. Its exact start-script equivalence, migration, and restore procedure still require [verification](ha_mcp_read_tunnel/DOCS.md).
 3. Add this repository to the Home Assistant app store and install HA MCP Permissions and HA MCP Write Tunnel.
 4. Follow the [permissions app notes](ha_mcp_permissions/DOCS.md) and [write tunnel notes](ha_mcp_write_tunnel/DOCS.md). Configure credentials only in Home Assistant's local app options.
 5. Confirm the four write tools operate exclusively on the development to-do list; verify denial of other actions and entities.
@@ -75,7 +75,7 @@ CI is configured in [policy-tests.yml](.github/workflows/policy-tests.yml). Mock
 
 ## Roadmap to 1.0.0
 
-See [RELEASE.md](RELEASE.md). Before publishing 1.0.0, verify the reconstructed local read tunnel source against the running instance, align app versions/build metadata, run security/history checks, verify fresh installation and backup recovery, and perform live authorization-denial tests.
+See [RELEASE.md](RELEASE.md). Before publishing 1.0.0, verify the new read tunnel app against the running local instance and complete controlled cutover, align app versions/build metadata, run security/history checks, verify fresh installation and backup recovery, and perform live authorization-denial tests.
 
 New write scopes must be implemented as separately reviewed, narrowly constrained capabilities — never as unrestricted Home Assistant service calls.
 
