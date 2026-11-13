@@ -1,0 +1,18 @@
+name: "OpenAI MCP Tunnel (lokal)"
+version: "0.1.0"
+slug: openai_mcp_tunnel
+description: "Dauerhafter Secure MCP Tunnel zu Home Assistant"
+arch:
+  - amd64
+init: false
+startup: application
+boot: auto
+host_network: true
+options:
+  tunnel_id: ""
+  api_key: ""
+  mcp_url: ""
+schema:
+  tunnel_id: str
+  api_key: password
+  mcp_url: password
