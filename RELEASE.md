@@ -1,39 +1,45 @@
 # Release policy and v1.0.0 readiness
 
-A successful live setup does not by itself mean the project is reproducible, secure or ready for a stable release.
+A live system working successfully is not sufficient evidence for reproducible deployment or secure release.
 
-## Versioning
+## Versions as installed (2026-11-13)
 
-- Use semantic versions `MAJOR.MINOR.PATCH` for each Home Assistant app.
-- The repository may additionally carry a suite-wide tag once all components are present and verified.
-- Current **installed** versions: HA MCP Permissions 0.1.4, HA MCP Write Tunnel 0.1.1, local read tunnel 0.1.0 (running); replacement HA MCP Read Tunnel 0.1.0 (source prepared, not yet installed).
-- **Proposed first stable version:** 1.0.0. **Not released yet.**
-- Document and test upgrades with a rollback path; do not automatically alter running installations as part of documentation work.
+| Component | Version | State |
+| --- | --- | --- |
+| HA MCP Permissions | 0.1.4 | Running |
+| HA MCP Write Tunnel | 0.1.1 | Running |
+| HA MCP Read Tunnel | 0.1.1 | Running, GitHub-managed |
+| Old OpenAI MCP Tunnel (lokal) | 0.1.0 | Stopped, rollback |
+| External HA MCP Server | 9.2.0 | Running |
 
-## v1.0.0 acceptance checklist
+Versioning policy: semantic versioning per app; an optional suite-wide `v1.0.0` release tag only when the whole installation passes the acceptance criteria. App versions and matching Docker build metadata should be aligned before release.
 
-- [x] Four write MCP tools exposed; functional add/rename/complete/list smoke checks done
-- [x] Source review: fixed to-do entity, action allowlist and internal tunnel destination
-- [x] Mocked authorization tests exist in `tests/`
-- [x] Repository documentation updated to distinguish design from deployed state
-- [x] Prepare a sanitized, GitHub-managed **HA MCP Read Tunnel** app alongside the existing local app
-- [ ] Verify reconstructed start script matches original and perform controlled read tunnel migration
-- [ ] Inspect current Git history for leaked credentials; rotate and purge any exposed secret
-- [ ] Verify running container image corresponds to reviewed source/commit
-- [ ] Verify live negative authorization tests without changing unrelated Home Assistant resources
-- [ ] Pin/review runtime dependencies and base images as appropriate; confirm CI is green
-- [ ] Align version numbers in `config.yaml`, Docker build metadata and changelog
-- [ ] Test fresh installation, upgrade and restoration from backups
-- [ ] Record tested Home Assistant Core, OS and upstream MCP server versions
-- [ ] Confirm local firewall/ingress controls and no router port forwarding
-- [ ] Publish release tag and notes only after checks above complete
+## Verification checklist
 
-## Security assumptions
+- [x] Four write tools present and functional in the allowed development list
+- [x] Fixed-target write gateway and restricted-service implementation inspected
+- [x] Unit and mocked runtime/service-scope tests in repository
+- [x] GitHub Actions checks on latest read-tunnel v0.1.1 changes reported successful
+- [x] GitHub-managed read tunnel installed and running; old local app stopped
+- [x] App reports security rating 7/8 with host networking disabled
+- [x] Home Assistant read operation succeeded after read tunnel switchover
+- [x] README and deployment/migration documentation updated
+- [ ] Full live end-to-end verification explicitly via each tunnel connection
+- [ ] Complete credential leak scan of all Git history and secret rotation if necessary
+- [ ] Demonstrate the running container image corresponds to reviewed source
+- [ ] Independently verify denied actions against other entities/services without modifying them
+- [ ] Dependency and base-image vulnerability review, plus version pinning strategy
+- [ ] Consistent 1.0.0 versions in three app configs and Docker build labels
+- [ ] Test clean install, upgrade/rollback and restoration from backup
+- [ ] Confirm exact Home Assistant Core/OS versions and firewall/ingress restrictions
+- [ ] Publish final release notes and tag only after all required checks
 
-The Permissions app requests `homeassistant_api: true`. The resulting Supervisor token is powerful; the least-privilege boundary is implemented in the application. It is not equivalent to a Home Assistant-scoped API credential. Any compromise of the app process could bypass its own policy.
+## Residual risk
 
-A secret URL path is an access credential, **not** a substitute for reviewing network and key handling. Treat URLs, app options and logs as sensitive; keep credential values only in local secret stores.
+HA MCP Permissions uses `homeassistant_api: true`, which supplies a privileged Supervisor-issued API token. The service/action/entity restriction is enforced in application code, not by a restricted token. An application compromise could breach that boundary.
 
-## Change control
+Do not commit keys, tunnel IDs, private URLs or populated Home Assistant app options. The GitHub repository does not include the credentials needed to restore the installation.
 
-Changes adding write scopes require explicit review, threat model updates, additional negative tests and an independent release. Do not quietly add arbitrary domain/entity/service arguments.
+## Release decision
+
+**Not released as v1.0.0 yet.** See [CHANGELOG.md](CHANGELOG.md) and [README.md](README.md). Release only after the remaining checks are confirmed, rather than equating working functionality with audited security.
