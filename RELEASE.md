@@ -27,12 +27,13 @@ Versioning policy: semantic versioning per app; an optional suite-wide `v1.0.0` 
 - [ ] Full live end-to-end verification explicitly via each tunnel connection
 - [x] Gitleaks full-history scan succeeded on 2026-11-13; no scanner findings. This is not a guarantee that all possible secret types were detected; rotate credentials if independent evidence of exposure appears
 - [ ] Demonstrate the running container image corresponds to reviewed source
-- [ ] Independently verify denied actions against other entities/services without modifying them
+- [x] Live input-validation negative test: blank task title rejected and all 13 existing tasks unchanged (2026-11-13)
+- [ ] Independently verify denied writes against other entities/services (mocked scope tests pass; live scope escape test not conducted)
 - [ ] Dependency and base-image vulnerability review, plus version pinning strategy
 - [x] Existing pre-release app versions and Docker build defaults are internally consistent (0.1.4 / 0.1.1 / 0.1.1)
 - [ ] Consistent 1.0.0 versions in three app configs and Docker build labels
 - [x] Documented recovery and rollback in [RECOVERY.md](RECOVERY.md)
-- [ ] Test clean install, upgrade/rollback and restoration from backup
+- [ ] Test clean install, upgrade/rollback and restoration from backup; direct backup listing through read-only MCP is deliberately blocked by HA MCP Server setting enable_snapshot_actions=false, so verify backup contents in HA UI
 - [x] User verified on 2026-11-13: UniFi Dream Router has no manual port forwarding and UPnP is disabled
 - [ ] Confirm exact Home Assistant Core/OS versions and any other external access paths or firewall/ingress restrictions
 - [ ] Publish final release notes and tag only after all required checks
