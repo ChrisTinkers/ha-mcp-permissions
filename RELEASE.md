@@ -25,7 +25,7 @@ Versioning policy: semantic versioning per app; an optional suite-wide `v1.0.0` 
 - [x] Home Assistant read operation succeeded after read tunnel switchover
 - [x] README and deployment/migration documentation updated
 - [ ] Full live end-to-end verification explicitly via each tunnel connection
-- [ ] Complete credential leak scan of all Git history and secret rotation if necessary
+- [x] Gitleaks full-history scan succeeded on 2026-11-13; no scanner findings. This is not a guarantee that all possible secret types were detected; rotate credentials if independent evidence of exposure appears
 - [ ] Demonstrate the running container image corresponds to reviewed source
 - [ ] Independently verify denied actions against other entities/services without modifying them
 - [ ] Dependency and base-image vulnerability review, plus version pinning strategy
