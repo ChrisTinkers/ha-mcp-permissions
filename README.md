@@ -1,82 +1,77 @@
-# Home Assistant / ChatGPT MCP suite
+# Home Assistant / ChatGPT MCP Suite
 
-A self-hosted Home Assistant MCP setup with **separate read-only and narrowly scoped write connections**. The write gateway manages **only** `todo.ha_weiterentwicklung`.
+Self-hosted MCP integration with **separate read and narrowly restricted write connections**. The only writable Home Assistant entity exposed by the custom write gateway is `todo.ha_weiterentwicklung`.
 
-> **Status (2026-11-13):** The currently deployed permissions app, write tunnel and legacy local read tunnel are running; the GitHub-managed read tunnel is prepared but not yet installed. A GitHub-managed replacement for the local read tunnel is now tracked under a new app slug; the existing local installation remains active. Its start script uses confirmed `bashio::config` sources, but the exact three original assignment lines have not yet been compared byte-for-byte; deployment parity and a clean-install test remain open. Version 1.0.0 is proposed but **not yet released**.
+## Current deployment (2026-11-13)
+
+| Component | Installed version | Status | Source |
+| --- | --- | --- | --- |
+| HA MCP Permissions | 0.1.4 | Running | [ha_mcp_permissions](ha_mcp_permissions/) |
+| HA MCP Write Tunnel | 0.1.1 | Running | [ha_mcp_write_tunnel](ha_mcp_write_tunnel/) |
+| HA MCP Read Tunnel | 0.1.1 | Running; GitHub-managed replacement | [ha_mcp_read_tunnel](ha_mcp_read_tunnel/) |
+| Home Assistant MCP Server | 9.2.0 | Running, configured as read-only | External integration |
+| OpenAI MCP Tunnel (lokal) | 0.1.0 | **Stopped; rollback only** | Former locally installed app |
+
+The GitHub-managed read tunnel has been successfully installed and started with `host_network: false` (Home Assistant app security score observed: 7/8). A Home Assistant read-tool call succeeded after migration. The old local tunnel remains installed but stopped.
+
+> **Release status:** v1.0.0 is planned, not yet tagged or published. A successful installation does not replace security review, disaster-recovery testing or an end-to-end tunnel-path verification.
 
 ## Architecture
 
 ```text
 ChatGPT
-  |-- Read connection --> HA MCP Read Tunnel --> HA MCP Server 9.2.0
-  |                                                (read_only_mode=true)
+  |-- Read connection --> HA MCP Read Tunnel --> Home Assistant MCP Server
+  |                                              (read_only_mode=true)
   |
   `-- Write connection --> HA MCP Write Tunnel --> HA MCP Permissions
                                                     |
                                                     `--> todo.ha_weiterentwicklung
 ```
 
-Both connections are independent. No generic Home Assistant service caller is exposed by the write gateway.
+Both connections use separate tunnel configurations. The write gateway has no general-purpose Home Assistant service tool.
 
-## Components
+## Allowed write gateway operations
 
-| App | Source | Version/status (2026-11-13) | Role |
-| --- | --- | --- | --- |
-| HA MCP Permissions | [ha_mcp_permissions/](ha_mcp_permissions/) | 0.1.4 | Restricts write operations to one to-do list |
-| HA MCP Write Tunnel | [ha_mcp_write_tunnel/](ha_mcp_write_tunnel/) | 0.1.1 | Dedicated OpenAI tunnel to the limited gateway |
-| HA MCP Read Tunnel | [ha_mcp_read_tunnel/](ha_mcp_read_tunnel/); [migration notes](ha_mcp_read_tunnel/DOCS.md) | 0.1.0, prepared / not installed | Replacement for the local read tunnel |
-| Home Assistant MCP Server | External dependency | 9.2.0 | Existing read-only MCP integration |
+| MCP tool | HA service |
+| --- | --- |
+| `list_development_tasks` | `todo.get_items` |
+| `add_development_task` | `todo.add_item` |
+| `rename_development_task` | `todo.update_item` |
+| `complete_development_task` | `todo.update_item` |
 
-Installed component versions are independent; there is not yet a unified 1.0 release.
+The entity `todo.ha_weiterentwicklung` is hard-coded server-side. Clients cannot choose another entity, domain, service or upstream URL.
 
-## Approved operations
+## Setup and recovery
 
-The write gateway exposes exactly four tools:
+1. Install and configure the external Home Assistant MCP Server with **read-only mode enabled**.
+2. Install **HA MCP Permissions** and **HA MCP Write Tunnel** from this app repository. Read [permissions documentation](ha_mcp_permissions/DOCS.md) and [write tunnel documentation](ha_mcp_write_tunnel/DOCS.md).
+3. Install **HA MCP Read Tunnel**, configure its read-side tunnel values **only in Home Assistant app options**, and check its read-only upstream. Follow the [migration/rollback guide](ha_mcp_read_tunnel/DOCS.md).
+4. Verify the read and write tunnel connections independently; validate the write scope against `todo.ha_weiterentwicklung`.
+5. Keep a separate protected backup of Home Assistant app options and credentials. **GitHub is not a backup of runtime secrets.**
 
-- `list_development_tasks`: `todo.get_items`
-- `add_development_task`: `todo.add_item`
-- `rename_development_task`: `todo.update_item` with a new name
-- `complete_development_task`: `todo.update_item` with completed status
+The old locally installed read tunnel has deliberately been retained in the stopped state until recovery tests are complete.
 
-The target `todo.ha_weiterentwicklung` is hard-coded. Users cannot provide another entity, domain, service or arbitrary URL. The server imposes input validation and a fixed service allowlist.
+## Security model
 
-## Installation and recovery
+- The write gateway checks a private `/<access_key>/mcp` route, limits its services, validates inputs and overwrites any client-supplied `entity_id`.
+- The write gateway's port is not mapped to the host by default; the write tunnel has no inbound port mapping.
+- The read tunnel no longer needs `host_network: true`; its source is at `host_network: false`.
+- **Residual privilege risk:** the permissions gateway obtains a powerful Home Assistant Supervisor token (`homeassistant_api: true`). Restrictions are enforced by the gateway application itself, **not** by a least-privileged Supervisor credential. A compromise of this process could bypass its in-process policy.
+- No firewall, gateway hardening or source check alone is proof of full security.
 
-1. Install and verify the upstream Home Assistant MCP Server in `read_only_mode=true`.
-2. The new HA MCP Read Tunnel app is tracked in sanitized form. The existing local app remains active until cutover. Its exact start-script equivalence, migration, and restore procedure still require [verification](ha_mcp_read_tunnel/DOCS.md).
-3. The repository is already in the Home Assistant app store for HA MCP Permissions and HA MCP Write Tunnel. After merging the PR, refresh it and install the new HA MCP Read Tunnel using the documented controlled cutover.
-4. Follow the [permissions app notes](ha_mcp_permissions/DOCS.md) and [write tunnel notes](ha_mcp_write_tunnel/DOCS.md). Configure credentials only in Home Assistant's local app options.
-5. Confirm the four write tools operate exclusively on the development to-do list; verify denial of other actions and entities.
-6. Maintain a separate secure backup of local configuration, credentials and app data. GitHub does **not** replace a secret-bearing backup.
+**Never publish** API keys, access keys, tunnel IDs, private endpoint URLs, Supervisor tokens, populated `options.json`, app runtime logs or backup archives. Public examples must use placeholders. Before release, examine **all Git history**, not just tracked current files, for exposed secrets.
 
-Default configuration does not publish the permission gateway's port to the host (`8765/tcp: null`), and the write tunnel exposes no incoming port. Never add a router port forward to the MCP gateway.
+## Tests
 
-## Security and limitations
-
-- Only requests to the secret `/<access_key>/mcp` path reach the gateway. **The complete URL is itself a secret.**
-- The write tunnel restricts its upstream to the internal permissions app hostname.
-- **Important residual risk:** HA MCP Permissions has a privileged Supervisor-issued Home Assistant API token. Scope restrictions are enforced by application code, not a separately scoped Home Assistant credential. A compromised container could theoretically exceed its intended scope.
-- Code review and mocked tests are not proof that a deployed container matches the repository or that the deployment is free of vulnerabilities.
-- Review and pin dependencies and base images, rotate previously exposed tokens and perform live negative tests before a 1.0 release.
-
-**Never commit or publish** `access_key`, `api_key`, Supervisor tokens, tunnel credentials, complete secret MCP URLs, `options.json`, `.env`, logs containing secrets or Home Assistant backups. Use placeholders such as `YOUR_ACCESS_KEY` in examples. Also review Git history, not just current files.
-
-## Automated checks
+The repository contains tests under `tests/` and a GitHub Actions workflow at [.github/workflows/policy-tests.yml](.github/workflows/policy-tests.yml).
 
 ```bash
 python -m pip install -r ha_mcp_permissions/requirements.txt
 python -m unittest discover -s tests -v
+sh -n ha_mcp_read_tunnel/run.sh
 sh -n ha_mcp_write_tunnel/run.sh
 ```
 
-CI is configured in [policy-tests.yml](.github/workflows/policy-tests.yml). Mock tests complement but do not replace live validation.
+Recent GitHub Actions security-policy runs have succeeded (2026-11-13). Tests use mocked calls and cannot prove the entire live deployment boundary.
 
-**Live observations on 2026-11-13:** three relevant apps running, four write tools exposed and exercised successfully. Server-side restrictions are supported by source review and tests, but exact deployed-image correspondence is not yet proven.
-
-## Roadmap to 1.0.0
-
-See [RELEASE.md](RELEASE.md). Before publishing 1.0.0, verify the new read tunnel app against the running local instance and complete controlled cutover, align app versions/build metadata, run security/history checks, verify fresh installation and backup recovery, and perform live authorization-denial tests.
-
-New write scopes must be implemented as separately reviewed, narrowly constrained capabilities — never as unrestricted Home Assistant service calls.
-
-Maintained by [ChrisTinkers](https://github.com/ChrisTinkers).
+See [Release readiness](RELEASE.md) and [Changelog](CHANGELOG.md). No `v1.0.0` tag has been published.
