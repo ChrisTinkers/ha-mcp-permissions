@@ -1,39 +1,38 @@
 # HA MCP Read Tunnel
 
-Repository-managed replacement for the previously local **OpenAI MCP Tunnel (lokal)**.
+GitHub-managed read tunnel for the existing Home Assistant MCP Server, which must operate in `read_only_mode=true`.
 
-**Migration status:** Source prepared; **not yet installed or cut over**. The old local app stays active until the new app is installed, its credentials are entered locally, and read-only operation is confirmed.
-
-## Purpose
-
-Connect the existing Home Assistant MCP Server (`read_only_mode=true`) to the OpenAI MCP tunnel. This is the **read** side only; the separate [write tunnel](../ha_mcp_write_tunnel/) connects to the restricted [permissions gateway](../ha_mcp_permissions/).
+**Installed and running:** v0.1.1 (verified 2026-11-13). The former **OpenAI MCP Tunnel (lokal)** v0.1.0 is stopped but retained for rollback.
 
 ## Configuration
 
-Home Assistant prompts for `tunnel_id`, `api_key`, and `mcp_url`. All values must be set inside the app options; **no real secrets belong in GitHub**.
+The Home Assistant app has three secret settings:
 
-The startup script reads these values using `bashio::config` and exports them for the pinned tunnel-client runtime.
+- `tunnel_id`: identifier of the read-side tunnel
+- `api_key`: runtime credential for the tunnel client
+- `mcp_url`: internal URL of the existing **read-only** Home Assistant MCP Server
 
-- The upstream `mcp_url` must refer to the **existing read-only Home Assistant MCP Server** endpoint.
-- The app still uses `host_network: true`, matching the functioning local version. Whether this can be reduced should be tested independently after migration.
-- The Dockerfile pins tunnel-client runtime v0.0.19 by download URL and SHA-256 integrity check. Review and upgrade separately, not during cutover.
-- `config.yaml` uses a new app slug (`ha_mcp_read_tunnel`) so both old and new apps can temporarily coexist.
+Enter these only in Home Assistant's private app configuration. **Do not save real values in GitHub, issues or screenshots.** Treat a full MCP URL as sensitive when it contains private paths or credentials.
 
-## Safe migration
+The script loads fields using `bashio::config` and exports them to the tunnel client. The app uses `host_network: false`; an app security score of **7/8** was observed after this change.
 
-1. Review and merge the GitHub pull request before refreshing the repository in the Home Assistant app store.
-2. Refresh the existing GitHub app repository source in Home Assistant; confirm **HA MCP Read Tunnel** appears.
-3. Install the new app, but **do not stop or uninstall the local tunnel yet**.
-4. In the new app's private configuration, manually enter the read-side tunnel ID, runtime API key, and read-only MCP upstream URL. Never publish, paste, or commit these values.
-5. If the OpenAI tunnel service allows only one active client for the tunnel ID, **stop the old local app immediately before starting the new app** (controlled cutover); otherwise avoid duplicate connections.
-6. Start the new app, inspect sanitized logs, and validate a real read-only tool call from ChatGPT. Confirm no write tools came through the read connection.
-7. Only after successful operation disable auto-start or uninstall the old local app. Keep rollback available until tests are complete.
+The Dockerfile fetches tunnel-client-runtime v0.0.19 from the official release URL and verifies the archive's SHA-256. Its base image is `ghcr.io/home-assistant/base:3.24`.
 
-## Pre-release checks
+## Controlled migration (completed 2026-11-13)
 
-- Verify the three reconstructed source files against the local originals, especially the actual `bashio::config` assignment lines in `run.sh`.
-- Build on the HA machine and validate the downloaded binary/checksum.
-- Test clean install, read-only connection, rollback and backup restore.
-- Review secret-handling, any runtime logs and existing Git history before releasing v1.0.0.
+1. Add the GitHub repository to the Home Assistant App Store and refresh it.
+2. Install HA MCP Read Tunnel v0.1.1, with the new distinct slug.
+3. Copy the three settings privately from the old local app configuration.
+4. Stop **OpenAI MCP Tunnel (lokal)** before starting the new app, especially if reusing the same tunnel ID.
+5. Start HA MCP Read Tunnel and inspect sanitized logs.
+6. Check that the read connection can access Home Assistant and that the existing read-side MCP Server remains read-only.
 
-The new app is kept at version **0.1.0** for this migration. There is **no stable release yet**.
+**Observed:** The new app started successfully; the old app is stopped; a Home Assistant read operation succeeded. A full tunnel-specific end-to-end check and clean reinstall/restore test remain outstanding.
+
+## Rollback and limitations
+
+To roll back, stop the new app before starting the old app; avoid simultaneous connections with the same tunnel ID. Retain the old app and its credentials until the new deployment has passed recovery tests.
+
+The reconstructed `run.sh` uses the previously verified `bashio::config` mechanism, but exact byte-for-byte equivalence with the old script's credential assignment lines has not been established.
+
+See [release checklist](../RELEASE.md) for remaining stability and security work.
