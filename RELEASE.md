@@ -6,7 +6,7 @@ A successful live setup does not by itself mean the project is reproducible, sec
 
 - Use semantic versions `MAJOR.MINOR.PATCH` for each Home Assistant app.
 - The repository may additionally carry a suite-wide tag once all components are present and verified.
-- Current **installed** versions: HA MCP Permissions 0.1.4, HA MCP Write Tunnel 0.1.1, local read tunnel 0.1.0 (2026-11-13).
+- Current **installed** versions: HA MCP Permissions 0.1.4, HA MCP Write Tunnel 0.1.1, local read tunnel 0.1.0 (running); replacement HA MCP Read Tunnel 0.1.0 (source prepared, not yet installed).
 - **Proposed first stable version:** 1.0.0. **Not released yet.**
 - Document and test upgrades with a rollback path; do not automatically alter running installations as part of documentation work.
 
@@ -16,7 +16,8 @@ A successful live setup does not by itself mean the project is reproducible, sec
 - [x] Source review: fixed to-do entity, action allowlist and internal tunnel destination
 - [x] Mocked authorization tests exist in `tests/`
 - [x] Repository documentation updated to distinguish design from deployed state
-- [ ] Recover the actual **local read tunnel** implementation, sanitized and documented
+- [x] Prepare a sanitized, GitHub-managed **HA MCP Read Tunnel** app alongside the existing local app
+- [ ] Verify reconstructed start script matches original and perform controlled read tunnel migration
 - [ ] Inspect current Git history for leaked credentials; rotate and purge any exposed secret
 - [ ] Verify running container image corresponds to reviewed source/commit
 - [ ] Verify live negative authorization tests without changing unrelated Home Assistant resources
