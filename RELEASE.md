@@ -33,7 +33,8 @@ Versioning policy: semantic versioning per app; an optional suite-wide `v1.0.0` 
 - [ ] Consistent 1.0.0 versions in three app configs and Docker build labels
 - [x] Documented recovery and rollback in [RECOVERY.md](RECOVERY.md)
 - [ ] Test clean install, upgrade/rollback and restoration from backup
-- [ ] Confirm exact Home Assistant Core/OS versions and firewall/ingress restrictions
+- [x] User verified on 2026-11-13: UniFi Dream Router has no manual port forwarding and UPnP is disabled
+- [ ] Confirm exact Home Assistant Core/OS versions and any other external access paths or firewall/ingress restrictions
 - [ ] Publish final release notes and tag only after all required checks
 
 ## Residual risk
