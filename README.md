@@ -74,4 +74,4 @@ sh -n ha_mcp_write_tunnel/run.sh
 
 Recent GitHub Actions security-policy runs have succeeded (2026-11-13). Tests use mocked calls and cannot prove the entire live deployment boundary.
 
-See [Release readiness](RELEASE.md) and [Changelog](CHANGELOG.md). No `v1.0.0` tag has been published.
+See [Recovery and rollback](RECOVERY.md), [Release readiness](RELEASE.md) and [Changelog](CHANGELOG.md). No `v1.0.0` tag has been published.
