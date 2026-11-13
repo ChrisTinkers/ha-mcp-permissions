@@ -33,7 +33,8 @@ Versioning policy: semantic versioning per app; an optional suite-wide `v1.0.0` 
 - [x] Existing pre-release app versions and Docker build defaults are internally consistent (0.1.4 / 0.1.1 / 0.1.1)
 - [ ] Consistent 1.0.0 versions in three app configs and Docker build labels
 - [x] Documented recovery and rollback in [RECOVERY.md](RECOVERY.md)
-- [ ] Test clean install, upgrade/rollback and restoration from backup; direct backup listing through read-only MCP is deliberately blocked by HA MCP Server setting enable_snapshot_actions=false, so verify backup contents in HA UI
+- [x] User confirmed in Home Assistant UI that the prior successful backup contains HA MCP Permissions, HA MCP Write Tunnel, and the old local read tunnel (2026-11-13). This provides a rollback source for those apps, not for the newly installed GitHub-managed read tunnel.
+- [ ] Test clean install, upgrade/rollback and actual restoration from backup; direct backup listing through read-only MCP is deliberately blocked by HA MCP Server setting enable_snapshot_actions=false
 - [x] User verified on 2026-11-13: UniFi Dream Router has no manual port forwarding and UPnP is disabled
 - [ ] Confirm exact Home Assistant Core/OS versions and any other external access paths or firewall/ingress restrictions
 - [ ] Publish final release notes and tag only after all required checks
