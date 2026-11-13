@@ -1,16 +1,30 @@
 # HA MCP Write Tunnel
 
-This is an independent Home Assistant app for the separate write-only MCP connection.
+Installed version verified on 2026-11-13: **0.1.1**, running.
 
-- The existing read-only tunnel and original HA MCP server remain unchanged.
-- Do not start this app before verifying the HA MCP Permissions endpoint and authorization behavior.
-- Options are local secrets. Never paste the `api_key` or the private `mcp_url` into chat.
-- Set `tunnel_id` to the newly created OpenAI Platform tunnel.
-- Set `api_key` to a **runtime** API key with Tunnels Read + Use permissions.
-- Set `mcp_url` to the internal endpoint `http://9cf2e9bf-ha-mcp-permissions:8765/<ACCESS_KEY>/mcp`. Obtain ACCESS_KEY from the HA MCP Permissions app's local configuration; do not share it.
+This app connects the separate **restricted write MCP gateway** to an OpenAI tunnel. It does not replace the existing local read-only tunnel.
 
-The launch script accepts only the internal HA MCP Permissions hostname and port for its MCP target, preventing accidental redirection to the existing read-only server or an external URL.
+## Configuration (local only)
 
-**Limitation:** The target MCP app currently holds a Home Assistant Supervisor API token. Restriction is enforced in the MCP code; it is not a separately scope-limited HA credential. Review and test before enabling writes. Tool access in ChatGPT is subject to plan/workspace permissions.
+The Home Assistant app requires:
 
-No public ingress or host port is created for this tunnel app.
+- `tunnel_id`: tunnel identifier provided for this write connection
+- `api_key`: runtime tunnel credential
+- `mcp_url`: private upstream URL for HA MCP Permissions
+
+**Never commit these values.** Do not paste the complete `mcp_url` into a public issue or screenshot: its path includes an access credential.
+
+The startup script accepts only the internal gateway host `9cf2e9bf-ha-mcp-permissions` on port `8765` and a URL ending in `/mcp`. The actual secret path belongs exclusively in local app options.
+
+This app has `ports: {}` and does not request Home Assistant Core or Supervisor API access. OAuth metadata discovery is disabled for this secret-path backend.
+
+## Security and operations
+
+- No public port forwarding.
+- Keep the read and write tunnels separate and independently revocable.
+- Rotate credentials after suspected exposure.
+- Review changes to `run.sh` and the pinned tunnel-client image before upgrading.
+- Reconfirm four-tool availability after upgrades.
+- The upstream Permissions app still has a privileged Supervisor-issued token; see [its security model](../ha_mcp_permissions/DOCS.md).
+
+See [release checklist](../RELEASE.md). A running service is not proof of authorization isolation or a tested recovery.
