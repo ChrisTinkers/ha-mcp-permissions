@@ -14,7 +14,7 @@ Self-hosted MCP integration with **separate read and narrowly restricted write c
 
 The GitHub-managed read tunnel has been successfully installed and started with `host_network: false` (Home Assistant app security score observed: 7/8). A Home Assistant read-tool call succeeded after migration. The old local tunnel remains installed but stopped.
 
-> **Release status:** v1.0.0 is planned, not yet tagged or published. A successful installation does not replace security review, disaster-recovery testing or an end-to-end tunnel-path verification.
+> **Release status:** v1.0.0 is prepared on a release branch, but is not merged, installed, tagged or published. A successful installation does not replace security review, disaster-recovery testing or an end-to-end tunnel-path verification.
 
 ## Architecture
 
@@ -74,4 +74,4 @@ sh -n ha_mcp_write_tunnel/run.sh
 
 Recent GitHub Actions security-policy runs have succeeded (2026-11-13). Tests use mocked calls and cannot prove the entire live deployment boundary.
 
-See [Recovery and rollback](RECOVERY.md), [Release readiness](RELEASE.md) and [Changelog](CHANGELOG.md). No `v1.0.0` tag has been published.
+See [Recovery and rollback](RECOVERY.md), [Release readiness](RELEASE.md) and [Changelog](CHANGELOG.md). A v1.0.0 release candidate is prepared on a separate branch. No `v1.0.0` tag has been published; the running installations remain on their previously tested versions.
