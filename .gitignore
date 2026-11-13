@@ -1,0 +1,18 @@
+# Never publish local Home Assistant credentials or backups
+.env
+.env.*
+!.env.example
+**/options.json
+**/secrets.yaml
+**/*token*
+**/*.log
+**/*.db
+**/*.sqlite*
+*.tar
+*.tar.gz
+*.zip
+*.backup
+__pycache__/
+.pytest_cache/
+.venv/
+venv/

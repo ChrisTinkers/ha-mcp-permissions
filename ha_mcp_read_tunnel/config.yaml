@@ -1,0 +1,18 @@
+name: "HA MCP Read Tunnel"
+version: "0.1.0"
+slug: ha_mcp_read_tunnel
+description: "Separater lesender OpenAI MCP Tunnel zu Home Assistant"
+arch:
+  - amd64
+init: false
+startup: application
+boot: auto
+host_network: true
+options:
+  tunnel_id: ""
+  api_key: ""
+  mcp_url: ""
+schema:
+  tunnel_id: str
+  api_key: password
+  mcp_url: password
