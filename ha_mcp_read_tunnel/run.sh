@@ -10,5 +10,12 @@ if [[ -z "${CONTROL_PLANE_TUNNEL_ID}" || -z "${CONTROL_PLANE_API_KEY}" || -z "${
   exit 1
 fi
 
-bashio::log.info "Starte OpenAI Secure MCP Tunnel."
+# Permit only the installed Home Assistant MCP server on its internal port.
+# Do not log the URL: its path contains a private MCP access secret.
+if [[ ! "${MCP_SERVER_URL}" =~ ^http://81f33d0f-ha-mcp:9583/[^/?#]+/mcp$ ]]; then
+  bashio::log.error "Ungueltige MCP-Zieladresse: nur der interne HA MCP Server auf Port 9583 ist erlaubt."
+  exit 1
+fi
+
+bashio::log.info "Starte OpenAI Secure MCP Read Tunnel (Zielhost geprueft)."
 exec /usr/local/bin/tunnel-client-runtime run --log.level=info
