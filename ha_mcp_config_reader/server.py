@@ -134,9 +134,10 @@ async def list_config_files() -> dict:
 
 
 @server.tool()
-async def read_config_file(filename: str) -> dict:
-    """Read an approved packages/<name>.yaml or configuration.yaml file."""
-    return {"filename": filename, "content": read_config(filename, ALLOWED)}
+async def read_config_file(filename: str) -> str:
+    """Return the text of an approved YAML file (never credentials or secrets)."""
+    content = read_config(filename, ALLOWED)
+    return f"File: {filename}\n\n{content}"
 
 
 class ProtectedMCP:
