@@ -1,0 +1,24 @@
+name: "HA MCP Config Tunnel"
+version: "1.0.0"
+slug: "ha_mcp_config_tunnel"
+description: "Separater MCP Tunnel zum HA Config Reader"
+url: "https://github.com/ChrisTinkers/ha-mcp-permissions"
+arch:
+  - amd64
+init: false
+startup: application
+boot: manual
+host_network: false
+homeassistant_api: false
+hassio_api: false
+auth_api: false
+docker_api: false
+ports: {}
+options:
+  tunnel_id: ""
+  api_key: ""
+  mcp_url: ""
+schema:
+  tunnel_id: str
+  api_key: password
+  mcp_url: password

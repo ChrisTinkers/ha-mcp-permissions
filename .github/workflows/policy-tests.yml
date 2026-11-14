@@ -18,6 +18,10 @@ jobs:
         run: sh -n ha_mcp_write_tunnel/run.sh
       - name: Build isolated write tunnel image
         run: docker build --pull -t ha-mcp-write-tunnel:test ha_mcp_write_tunnel
+      - name: Validate Config Reader tunnel bash syntax
+        run: bash -n ha_mcp_config_tunnel/run.sh
+      - name: Build isolated Config Reader tunnel image
+        run: docker build --pull -t ha-mcp-config-tunnel:test ha_mcp_config_tunnel
       - name: Build isolated YAML reader image
         run: docker build --pull -t ha-mcp-config-reader:test ha_mcp_config_reader
       - name: Check syntax and policy invariants
