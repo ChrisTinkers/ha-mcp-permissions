@@ -1,51 +1,57 @@
-# Release policy and v1.0.0 readiness
+# Release policy and readiness
 
-A live system working successfully is not sufficient evidence for reproducible deployment or secure release.
+**Documentation status: 2026-11-14.** The three core apps run on version 1.0.0, and the experimental Config Reader is installed at 1.1.1 but stopped. App version numbers are independent. A suite-wide `v1.0.0` GitHub release/tag is **not documented as published**.
 
-## Versions as installed (2026-11-13)
+## Directly observed Home Assistant state
 
-| Component | Version | State |
+| Component | Installed version | Observed state |
 | --- | --- | --- |
-| HA MCP Permissions | 0.1.4 | Running |
-| HA MCP Write Tunnel | 0.1.1 | Running |
-| HA MCP Read Tunnel | 0.1.1 | Running, GitHub-managed |
-| Old OpenAI MCP Tunnel (lokal) | 0.1.0 | Stopped, rollback |
-| External HA MCP Server | 9.2.0 | Running |
+| HA MCP Permissions | 1.0.0 | Running |
+| HA MCP Write Tunnel | 1.0.0 | Running |
+| HA MCP Read Tunnel | 1.0.0 | Running |
+| HA MCP Config Reader | 1.1.1 | Stopped |
+| External Home Assistant MCP Server | 9.2.0 | Running |
+| Old OpenAI MCP Tunnel (local) | 0.1.0 | Stopped, retained for rollback |
 
-Versioning policy: semantic versioning per app; an optional suite-wide `v1.0.0` release tag only when the whole installation passes the acceptance criteria. App versions and matching Docker build metadata should be aligned before release.
+The Config Reader requires a separate tunnel and ChatGPT connection; its installation alone does not expose the new tools.
 
-## Verification checklist
+## Release verification checklist
 
-- [x] Four write tools present and functional in the allowed development list
-- [x] Fixed-target write gateway and restricted-service implementation inspected
-- [x] Unit and mocked runtime/service-scope tests in repository
-- [x] GitHub Actions checks on latest read-tunnel v0.1.1 changes reported successful
-- [x] GitHub-managed read tunnel installed and running; old local app stopped
-- [x] App reports security rating 7/8 with host networking disabled
-- [x] Home Assistant read operation succeeded after read tunnel switchover
-- [x] README and deployment/migration documentation updated
-- [ ] Full live end-to-end verification explicitly via each tunnel connection
-- [x] Gitleaks full-history scan succeeded on 2026-11-13; no scanner findings. This is not a guarantee that all possible secret types were detected; rotate credentials if independent evidence of exposure appears
-- [ ] Demonstrate the running container image corresponds to reviewed source
-- [x] Live input-validation negative test: blank task title rejected and all 13 existing tasks unchanged (2026-11-13)
-- [ ] Independently verify denied writes against other entities/services (mocked scope tests pass; live scope escape test not conducted)
-- [ ] Dependency and base-image vulnerability review, plus version pinning strategy
-- [x] Existing pre-release app versions and Docker build defaults are internally consistent (0.1.4 / 0.1.1 / 0.1.1)
-- [x] Prepare consistent 1.0.0 versions in the three app configs and Docker build defaults on the release branch
-- [ ] Verify v1.0.0 release candidate, merge and deploy one app at a time
-- [x] Documented recovery and rollback in [RECOVERY.md](RECOVERY.md)
-- [x] User confirmed in Home Assistant UI that the prior successful backup contains HA MCP Permissions, HA MCP Write Tunnel, and the old local read tunnel (2026-11-13). This provides a rollback source for those apps, not for the newly installed GitHub-managed read tunnel.
-- [ ] Test clean install, upgrade/rollback and actual restoration from backup; direct backup listing through read-only MCP is deliberately blocked by HA MCP Server setting enable_snapshot_actions=false
-- [x] User verified on 2026-11-13: UniFi Dream Router has no manual port forwarding and UPnP is disabled
-- [ ] Confirm exact Home Assistant Core/OS versions and any other external access paths or firewall/ingress restrictions
-- [ ] Publish final release notes and tag only after all required checks
+### Completed or previously documented
 
-## Residual risk
+- [x] Restricted write gateway implements four scoped tools for `todo.ha_weiterentwicklung`.
+- [x] Unit, service-scope and mocked runtime tests exist in the repository.
+- [x] Core apps 1.0.0 are installed and reported running on 2026-11-14.
+- [x] Config Reader 1.1.1 is installed and reported stopped on 2026-11-14.
+- [x] Automated tests and Docker build for Config Reader 1.1.1 implementation passed on GitHub Actions.
+- [x] Full Git-history secret scan passed on the implementation commit; a scan cannot guarantee absence of every secret.
+- [x] Earlier read-tunnel migration and successful read call were documented.
+- [x] Recovery/rollback instructions exist in [RECOVERY.md](RECOVERY.md).
+- [x] Earlier user confirmation of a Home Assistant backup covering the original core apps was documented; it does **not** prove a restore.
+- [x] Earlier user verification documented no manual UniFi port forwarding and disabled UPnP.
 
-HA MCP Permissions uses `homeassistant_api: true`, which supplies a privileged Supervisor-issued API token. The service/action/entity restriction is enforced in application code, not by a restricted token. An application compromise could breach that boundary.
+### Still outstanding
 
-Do not commit keys, tunnel IDs, private URLs or populated Home Assistant app options. The GitHub repository does not include the credentials needed to restore the installation.
+- [ ] Start and smoke-test the Config Reader 1.1.1 with a reviewed allowlist.
+- [ ] Provision a separate Config Reader tunnel and ChatGPT connection; test allowed and denied reads end-to-end.
+- [ ] Re-verify both existing read and restricted-write paths end-to-end after deployment changes.
+- [ ] Independently verify denied writes to other entities/services without affecting unrelated entities.
+- [ ] Demonstrate deployed container images correspond to reviewed source.
+- [ ] Perform a clean install, upgrade/rollback and **actual restoration** from backup.
+- [ ] Review dependencies/base images and decide on version pinning.
+- [ ] Confirm Home Assistant Core/OS versions and external access boundaries.
+- [ ] Verify final suite release criteria before creating a suite-wide GitHub tag/release.
+
+## Security constraints and residual risk
+
+The Permissions gateway uses `homeassistant_api: true` and receives a privileged Supervisor-issued token. Restrictions are implemented in the gateway code, not in a least-privileged Supervisor credential; process compromise could bypass them.
+
+The Config Reader mounts the Home Assistant configuration read-only and checks allowed paths, but its credential detection is heuristic. The `packages/*.yaml` wildcard includes future direct package files automatically. Review source files and avoid embedding credentials.
+
+Never commit populated app options, tunnel IDs, keys, private MCP URLs, tokens, logs containing secrets or backups. Keep protected credential and Home Assistant backups separately.
 
 ## Release decision
 
-**v1.0.0 source candidate prepared; not merged or deployed, and not tagged as a release yet.** See [CHANGELOG.md](CHANGELOG.md) and [README.md](README.md). Release only after the remaining checks are confirmed, rather than equating working functionality with audited security.
+**No new suite-wide release is being published as part of this documentation update.** Continue operating the existing core apps without changes. Finish live Config Reader connectivity and the remaining security/recovery checks before declaring a complete release.
+
+See [README.md](README.md), [CHANGELOG.md](CHANGELOG.md) and [RECOVERY.md](RECOVERY.md).
