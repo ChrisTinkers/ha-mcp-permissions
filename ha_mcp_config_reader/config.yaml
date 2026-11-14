@@ -1,7 +1,7 @@
 name: "HA MCP Config Reader"
-version: "1.1.0"
+version: "1.1.1"
 slug: "ha_mcp_config_reader"
-description: "Read-only, allowlisted Home Assistant package YAML MCP server"
+description: "Read-only, allowlisted Home Assistant YAML MCP server"
 url: "https://github.com/ChrisTinkers/ha-mcp-permissions"
 arch:
   - amd64
@@ -22,7 +22,8 @@ ports_description:
 options:
   access_key: ""
   allowed_files:
-    - hauswartung.yaml
+    - "packages/*.yaml"
+    - "configuration.yaml"
 schema:
   access_key: password
   allowed_files:
