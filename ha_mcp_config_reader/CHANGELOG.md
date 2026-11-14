@@ -1,5 +1,12 @@
 # Änderungsprotokoll
 
+## 1.1.3
+- YAML-Dateiinhalte werden als MCP-Text statt als verschachteltes Objekt zurückgegeben.
+- Bestehende Dateifreigaben, Nur-Lese-Zugriff und Geheimnisprüfung bleiben erhalten.
+
+## 1.1.2
+- Home-Assistant-Konfigurationsverzeichnis korrekt schreibgeschützt unter `/homeassistant` eingebunden.
+
 ## 1.1.1
 - Lesefreigabe für alle `.yaml`-Dateien direkt im Ordner `packages` ergänzt.
 - `configuration.yaml` kann jetzt ebenfalls gelesen werden.
