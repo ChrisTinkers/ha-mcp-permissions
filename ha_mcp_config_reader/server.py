@@ -12,19 +12,19 @@ from mcp.server import MCPServer
 CONFIG_ROOT = Path("/homeassistant")
 MAX_BYTES = 131072
 PORT = 8766
-SAFE_NAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]*\\.ya?ml\\Z")
+SAFE_NAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]*\.ya?ml\Z")
 PACKAGE_PATTERN = "packages/*.yaml"
 ROOT_FILE = "configuration.yaml"
 # Deny known secret-bearing names even if a future allowlist is broadened.
 DENIED_NAMES = frozenset({"secrets.yaml", "secrets.yml"})
 # Conservative heuristic, not a substitute for manual review of allowed files.
 SENSITIVE = re.compile(
-    r"(?im)(?:^|[,\\{])\\s*['\\\"]?(?:password|passwd|token|"
+    r"(?im)(?:^|[,\{])\s*['\\"]?(?:password|passwd|token|"
     r"(?:api|access|refresh|bearer|client|private)[_-]?(?:key|token|secret)|"
-    r"secret|authorization|credential|webhook_id)['\\\"]?\\s*:"
+    r"secret|authorization|credential|webhook_id)['\\"]?\s*:"
 )
-SENSITIVE_URL = re.compile(r"(?i)\\b[a-z][a-z0-9+.-]*://[^\\s/@]+:[^\\s/@]+@")
-SENSITIVE_AUTH = re.compile(r"(?i)\\b(?:bearer|basic)\\s+[A-Za-z0-9+/=_-]{12,}")
+SENSITIVE_URL = re.compile(r"(?i)\b[a-z][a-z0-9+.-]*://[^\s/@]+:[^\s/@]+@")
+SENSITIVE_AUTH = re.compile(r"(?i)\b(?:bearer|basic)\s+[A-Za-z0-9+/=_-]{12,}")
 
 
 def valid_name(name):
