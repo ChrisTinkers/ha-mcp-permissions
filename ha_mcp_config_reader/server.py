@@ -19,10 +19,10 @@ ROOT_FILE = "configuration.yaml"
 DENIED_NAMES = frozenset({"secrets.yaml", "secrets.yml"})
 # Conservative heuristic, not a substitute for manual review of allowed files.
 SENSITIVE = re.compile(
-    r"(?im)(?:^|[,\\{])\\s*[^A-Za-z0-9_\\n]*"
+    r"(?im)(?:^|[,{])\s*['\"]?"
     r"(?:password|passwd|token|"
     r"(?:api|access|refresh|bearer|client|private)[_-]?(?:key|token|secret)|"
-    r"secret|authorization|credential|webhook_id)\\s*:"
+    r"secret|authorization|credential|webhook_id)['\"]?\s*:"
 )
 SENSITIVE_URL = re.compile(r"(?i)\b[a-z][a-z0-9+.-]*://[^\s/@]+:[^\s/@]+@")
 SENSITIVE_AUTH = re.compile(r"(?i)\b(?:bearer|basic)\s+[A-Za-z0-9+/=_-]{12,}")
@@ -55,7 +55,8 @@ def is_allowed(filename, allowed):
         return False
     name = filename[len("packages/"):]
     return valid_name(name) and (
-        PACKAGE_PATTERN in allowed or name in allowed or filename in allowed
+        (PACKAGE_PATTERN in allowed and name.endswith(".yaml"))
+        or name in allowed or filename in allowed
     )
 
 
