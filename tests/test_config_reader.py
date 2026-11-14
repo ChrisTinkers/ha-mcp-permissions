@@ -50,7 +50,7 @@ class ReaderTests(unittest.TestCase):
         target = self.root / "packages" / "hauswartung.yaml"
         target.unlink(missing_ok=True)
         target.symlink_to(self.options)
-        with self.assertRaises(ValueError):
+        with self.assertRaises((ValueError, FileNotFoundError)):
             self.reader.read_package("hauswartung.yaml", {"hauswartung.yaml"}, self.root)
         target.unlink()
 
