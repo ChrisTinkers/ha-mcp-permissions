@@ -19,9 +19,10 @@ ROOT_FILE = "configuration.yaml"
 DENIED_NAMES = frozenset({"secrets.yaml", "secrets.yml"})
 # Conservative heuristic, not a substitute for manual review of allowed files.
 SENSITIVE = re.compile(
-    r'(?im)(?:^|[,\\{])\\s*["\\\']?(?:password|passwd|token|'
-    r'(?:api|access|refresh|bearer|client|private)[_-]?(?:key|token|secret)|'
-    r'secret|authorization|credential|webhook_id)["\\\']?\\s*:'
+    r"(?im)(?:^|[,\\{])\\s*[^A-Za-z0-9_\\n]*"
+    r"(?:password|passwd|token|"
+    r"(?:api|access|refresh|bearer|client|private)[_-]?(?:key|token|secret)|"
+    r"secret|authorization|credential|webhook_id)\\s*:"
 )
 SENSITIVE_URL = re.compile(r"(?i)\b[a-z][a-z0-9+.-]*://[^\s/@]+:[^\s/@]+@")
 SENSITIVE_AUTH = re.compile(r"(?i)\b(?:bearer|basic)\s+[A-Za-z0-9+/=_-]{12,}")
