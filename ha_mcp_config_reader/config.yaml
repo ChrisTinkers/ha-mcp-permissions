@@ -1,5 +1,5 @@
 name: "HA MCP Config Reader"
-version: "1.1.1"
+version: "1.1.2"
 slug: "ha_mcp_config_reader"
 description: "Read-only, allowlisted Home Assistant YAML MCP server"
 url: "https://github.com/ChrisTinkers/ha-mcp-permissions"
@@ -14,7 +14,7 @@ hassio_api: false
 auth_api: false
 docker_api: false
 map:
-  - config:ro
+  - homeassistant_config:ro
 ports:
   8766/tcp: null
 ports_description:
