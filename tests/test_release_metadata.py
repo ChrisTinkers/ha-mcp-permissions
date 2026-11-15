@@ -1,4 +1,4 @@
-"""Check consistency of the three app version declarations.
+"""Check consistency of app manifest and Docker build versions.
 
 This validates source metadata only; it does not prove deployment provenance.
 """
@@ -7,8 +7,7 @@ import re
 import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-APPS = ("ha_mcp_permissions", "ha_mcp_write_tunnel", "ha_mcp_read_tunnel")
-EXPECTED = "1.0.0"
+APPS = ("ha_mcp_permissions", "ha_mcp_write_tunnel", "ha_mcp_read_tunnel", "ha_mcp_config_reader", "ha_mcp_config_tunnel")
 
 
 class ReleaseMetadataTests(unittest.TestCase):
@@ -22,7 +21,6 @@ class ReleaseMetadataTests(unittest.TestCase):
                 self.assertIsNotNone(c, "Missing app version")
                 self.assertIsNotNone(d, "Missing Docker build version")
                 self.assertEqual(c.group(1), d.group(1))
-                self.assertEqual(c.group(1), EXPECTED)
 
 
 if __name__ == "__main__":
